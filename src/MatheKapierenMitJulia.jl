@@ -1,5 +1,6 @@
 module MatheKapierenMitJulia
 
-# Write your package code here.
+export Arithmetik
+include("arithmetik.jl")
 
 end

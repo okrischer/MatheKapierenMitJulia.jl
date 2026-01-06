@@ -1,0 +1,50 @@
+---
+title: "Grundrechenarten"
+---
+
+In diesem Kapitel beschäftigen wir uns mit den vier
+[Grundrechenarten](https://de.wikipedia.org/wiki/Grundrechenart)
+*Addition*, *Subtraktion*, *Multiplikation* und *Division* sowie den zugehörigen
+Rechengesetzen.
+Diese *Rechengesetze* stellen ein Teilgebiet der Mathematik dar, das [Arithmetik](https://de.wikipedia.org/wiki/Arithmetik) genannt wird.
+
+Vor allem interessiert uns, wie wir diese mathematischen Operationen selbst
+mit Programmcode implementieren können, indem wir geeignete Funktionen für
+diese Operationen in *Julia*, der Programmiersprache unserer Wahl, erstellen.
+Wir werden uns dabei zunächst auf die *natürlichen* und die *ganzen* Zahlen beschränken.
+
+Um diese Funktionen aus dem begleitenden Software-Paket `MatheKapierenMitJulia`
+aufrufen zu können, müssen wir das Paket zunächst laden:
+
+```{julia}
+using MatheKapierenMitJulia
+```
+
+Das Software-Paket besteht aus mehreren *Untermodulen*, die vom Hauptpaket exportiert werden.
+Um eine Funktion aus einem bestimmtem Modul aufzurufen, müssen wir auch das entsprechende Modul angeben, für dieses Kapitel das Modul `Arithmetik`:
+
+```{julia}
+Arithmetik.bauernregel(83, 57)
+```
+
+Wir werden später auf diese Funktion zurück kommen; für jetzt reicht es zu wissen, dass damit eine Multiplikation durchgeführt wird.
+
+## Zahlensysteme
+
+## Binär-Zahlen
+
+## Grundrechenarten
+
+### Die russische Bauernregel der Multiplikation
+
+```julia
+function bauernregel(x::Integer, y::Integer)::Integer
+  z::Integer = 0
+  while y > 0
+    isodd(y) && (z += x)
+    x <<= 1
+    y >>= 1
+  end
+  z
+end
+```
