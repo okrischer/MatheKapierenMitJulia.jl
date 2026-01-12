@@ -3,6 +3,8 @@ project:
 
 engines: ['julia']
 
+lang: de
+
 website:
   title: "Mathe Kapieren mit Julia"
   sidebar:
@@ -12,7 +14,12 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: cosmo
+      dark: superhero
+    respect-user-color-scheme: true
+    highlight-style: github
     toc: true
+    code-overflow: wrap
     code-tools: true
     code-annotations: below

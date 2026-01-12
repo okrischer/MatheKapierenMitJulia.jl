@@ -1,0 +1,378 @@
+---
+title: "Zahlen und Zahlensysteme"
+---
+
+## Natürliche Zahlen
+
+Die [natürliche Zahlen](https://de.wikipedia.org/wiki/Nat%C3%BCrliche_Zahl) sind die grundlegenden Zahlen, die wir zum Zählen benutzen.
+Die Menge der natürlichen Zahlen wird mit dem Symbol $\mathbb{N}$ bezeichnet und umfasst in der traditionellen Darstellung alle positiven ganzen Zahlen, also
+
+$$
+\mathbb{N} = \{1,2,3\dots\}
+$$
+
+Diese Darstellung hat sich aber als unzureichend herausgestellt, auch weil die [ganzen Zahlen](https://de.wikipedia.org/wiki/Z%C3%A4hlen) selbst als Erweiterung der natürlichen Zahlen definiert sind, und die obige Definition damit selbstbezüglich und ohne Aussagekraft ist (vgl. hierzu [Selbstreferenzialität](https://de.wikipedia.org/wiki/Selbstreferenzialit%C3%A4t)).
+
+Ende des 19. Jarhunderts wurde diese Definition durch ein formal präzises System, den
+sogenannten [Peano-Axiomen](https://de.wikipedia.org/wiki/Peano-Axiome) abgelöst, benannt nach dem italienischen Mathematiker [Guiseppe Peano](https://de.wikipedia.org/wiki/Giuseppe_Peano).
+Die Menge der natürlichen Zahlen ist danach die Menge der Zahlen, die den *Peano-Axiomen* genügt.
+
+::: {.callout-note}
+## Peano-Axiome
+Die mengentheoretischen und logischen Grundlagen der *Peano-Axiome* sollen uns an dieser Stelle nicht interessieren.
+Für uns genügt es, die nachfolgenden Grundsätze zu verstehen:
+
+1. Jede natürliche Zahl $n$ hat einen direkten Nachfolger $n'$, d.h. die Menge der natürlichen Zahlen ist unendlich.
+2. Zwei verschiedene natürliche Zahlen haben auch verschiedene Nachfolger, d.h. jede natürliche Zahl ist eindeutig.
+3. `0` ist eine natürliche Zahl, aber kein Nachfolger einer natürlichen Zahl, d.h. `0` hat keinen Vorgänger.
+:::
+
+Die Sonderrolle der `0` wird hier deutlich: sie hat als einzige natürliche Zahl keinen Vorgänger und ist damit das kleinste Element der Menge.
+Alle nachfolgenden Zahlen sind jeweils um den Wert `1` größer als ihr Vorgänger.
+Da jede Zahl einen eindeutigen Nachfolger hat, kann auch für jede Zahl mit Ausnahme der `0` ein eindeutiger Vorgänger bestimmt werden.
+Daraus ergeben sich folgende Definitionen für den Nachfolger bzw. den Vorgänger einer Zahl:
+
+$$
+\begin{align*}
+n' &= n + 1 \\
+n &= n' - 1, \quad n' > 0.
+\end{align*}
+$$
+
+Wir werden im Folgenden zeigen, dass diese Definitionen reichen, um alle vier [Grundrechenarten](https://de.wikipedia.org/wiki/Grundrechenart) *Addition*, *Subtraktion*, *Multiplikation* und *Division* abzubilden.
+Das bedeutet, dass die Grundrechenarten letzlich auf einfaches *Zählen* zurückgeführt werden können.
+
+### Zählen
+
+[Zählen](https://de.wikipedia.org/wiki/Z%C3%A4hlen) dient der Ermittlung der Anzahl der Elemente einer endlichen Menge von Objekten gleicher Art.
+In Julia können wir so zählen:
+
+```{julia}
+n = 0
+n += 1                            # <1>
+@show n
+n -= 1                            # <2>
+@show n;
+```
+1. Vorwärts zählen: Kurzform für **n = n + 1**
+2. Rückwärts zählen: Kurzform für **n = n - 1**
+
+Nehmen wir an, wir haben zwei Obstschalen, eine mit Äpfeln und eine mit Birnen:
+
+```{julia}
+apfel = "🍎"
+äpfel = [apfel, apfel, apfel, apfel]
+birne = "🍐"
+birnen = [birne, birne, birne]
+@show äpfel
+@show birnen;
+```
+
+Um die Anzahl der Früchte in den jeweiligen Schalen zu bestimmen, erstellen wir eine Funktion, die elementares Zählen simuliert:
+
+```{julia}
+function count(collection::AbstractVector)
+  n = 0                                               # <1>
+  for e in collection                                 # <2>
+    n += 1                                            # <3>
+  end
+  n                                                   # <4>
+end
+```
+
+1. Initialisierung eines Zählers **n** mit 0 (dem "Wurzelelement" der natürlichen Zahlen).
+2. Beginn einer [for](https://docs.julialang.org/en/v1/manual/control-flow/#man-loops)-Schleife: alle Elemente der *collection* werden einmal durchlaufen und dabei nacheinander an die Variable **e** gebunden.
+3. Für jedes Element wird der Zähler um 1 erhöht, d.h. es wird gezählt.
+4. Der aktualisierte Zähler **n** wird als Ergebnis der Funktion zurück gegeben.
+
+::: {.callout-note}
+## Datentyp Vector
+Ein [Vector](https://docs.julialang.org/en/v1/base/arrays/#Base.Vector) in Julia ist eine Sammlung (engl. *collection*) von Objekten eines bestimmten Datentyps.
+
+Um genau zu sein, ist eine Sammlung nicht das Gleiche wie eine Menge.
+Eine Sammlung ist immer endlich und kann ein bestimmtes Objekt - im Gegensatz zu einer Menge - mehrfach enthalten.
+Das ist für unsere Überlegungen hier aber unerheblich; wir verwenden "Sammlung" als Synonym für "Menge".
+
+Der Parameter `collection` der Funktion `count` ist als `AbstractVector` festgelegt, ein [abstrakter Datentyp](https://docs.julialang.org/en/v1/base/base/#abstract%20type), der es erlaubt, an dieser Stelle einen Vector eines beliebigen Datentyps zu übergeben.
+Die oben definierten Vectoren `äpfel` und `birnen` sind z.B. vom Typ `Vector{String}`.
+:::
+
+Wir können damit beliebige endliche Mengen abzählen, wobei es keine Rolle spielt, welche Objekte gezählt werden. Das Ergebnis ist immer eine natürliche Zahl:
+
+```{julia}
+@show count(äpfel)
+@show count(birnen);
+```
+
+### Addition
+
+Was würde ein Kind machen, das noch nicht Rechnen gelernt hat, um die Gesamtzahl der Früchte zu bestimmen, d.h. die Anzahl der Äpfel und Birnen zu *addieren*?
+Vielleicht würde es so vorgehen:
+
+::: {.callout-note}
+## Addieren mit Abzählen: Zusammenzählen
+
+1. Die Äpfel aus der ersten Schale zählen und sich das Ergebnis merken: `vier`.
+2. Die Birnen nacheinander aus der zweiten Schale nehmen, zu den Äpfeln legen und dabei weiterzählen: `fünf`, `sechs`, `sieben`.
+3. Wenn alle Birnen bei den Äpfeln liegen ist der Vorgang abgeschlossen und das Ergebnis ist das letzte Zahlwort: `sieben`.
+:::
+
+Wir haben damit gerade unseren ersten [Algorithmus](https://de.wikipedia.org/wiki/Algorithmus) definiert: eine Anweisung zum *Zusammenzählen* zweier Mengen.
+Der Algorithmus kann so in Julia implementiert werden:
+
+```{julia}
+function count_up(a::AbstractVector, b::AbstractVector)
+  n = count(a)                                              # <1>
+  while !isempty(b)                                         # <2>
+    push!(a, pop!(b))
+    n += 1
+  end
+  (n, a)                                                    # <3>
+end
+```
+
+1. Abzählen der Elemente aus **a** und speichern unter **n**.
+2. Start einer [while](https://docs.julialang.org/en/v1/manual/control-flow/#man-loops)-Schleife: die Schleife wird solange ausgeführt bis **b** leer ist. In der Schleife wird mit [pop!](https://docs.julialang.org/en/v1/base/collections/#Base.pop!) jeweils ein Element aus **b** entfernt und mit [push!](https://docs.julialang.org/en/v1/base/collections/#Base.push!) in **a** eingefügt; schließlich wird mit **n += 1** weitergezählt.
+3. Wenn die Schleife beendet ist (**b** ist jetzt leer), werden der Zähler **n** und die *collection* **a** als Ergebnis zurück gegeben.
+
+Wir prüfen, ob der Algorithmus wie beabsichtigt funktioniert:
+
+```{julia}
+n, früchte = count_up(äpfel, birnen)
+@show früchte
+@assert n == 4 + 3
+```
+
+Das Macro [@assert](https://docs.julialang.org/en/v1/base/base/#Base.@assert) prüft, ob die Gesamtzahl der Früchte `n` tatsächlich gleich der Summe von `3` und `4` ist.
+Wenn nicht, würde ein `AssertionError` ausgegeben werden.
+Da das nicht der Fall ist, können wir davon ausgehen, dass unser Algorithmus korrekt arbeitet.
+
+Wir sollten uns aber klar machen, dass wir mit obigem Algorithmus tatsächlich Äpfel und Birnen **zusammengezählt** haben.
+Das ist nicht dasselbe wie die beiden Zahlen `3` und `4` zu **addieren** (erstes operiert auf der Anzahl beliebiger Objekte, letzteres auf Zahlen.)
+
+Trotzdem kommt bei beiden Verfahren das Gleiche heraus: `sieben` = 7 = 4 + 3.\
+Wir wollen uns das zunutze machen und auf der Grundlage des bestehenden Algorithmus eine *Rechenvorschrift* für die [Addition](https://de.wikipedia.org/wiki/Addition) erstellen.
+
+Die Idee ist, anstelle beliebiger Objekte natürliche Zahlen zu verwenden; auch Mengen von Zahlen können abgezählt werden:
+
+```{julia}
+@show count([1, 2, 3, 4])                   # <1>
+@show collect(1:7)                          # <2>
+@show count(1:7)                            # <3>
+@show count(1:100);
+```
+1. Abzählen einer Menge aus Zahlen.
+2. Ein Ausdruck in der Form **start:stop** erzeugt eine [range](https://docs.julialang.org/en/v1/base/math/#Base.range), ein Julia-Objekt das, wenn es z.B. mit [collect](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple{Any}) ausgewertet wird, einen Vector der Zahlen von **start** bis **stop** erzeugt.
+3. Abzählen der Elemente einer **range** aus natürlichen Zahlen.
+
+Entscheidend ist hier die Erkenntnis, dass offensichtlich die Anzahl der ersten `n` natürlichen Zahlen (ohne die `0`) immer gleich `n` ist, formal ausgedrückt
+
+$$
+N = \{1,2,\dots,n\} \implies |N| = n,
+$$
+
+wobei $|N|$ die [Mächtigkeit](https://de.wikipedia.org/wiki/M%C3%A4chtigkeit_(Mathematik)) der Menge $N$ bezeichnet, also die Anzahl der Elemente in $N$.
+
+Mit Hilfe der *Peano-Axiome* kann gezeigt werden, dass diese Aussage immer wahr ist.
+Wir können also unseren Algorithmus für die *Addition* so anpassen, dass wir anstatt Mengen abzuzählen, direkt mit natürlichen Zahlen rechnen
+
+```{julia}
+function add_naive(a::Integer, b::Integer)                                # <1>
+  if a < 0 || b < 0                                                       # <2>
+    throw(DomainError((a, b), "both arguments must be non-negative"))     # <3>
+  end
+  while b > 0                                                             # <4>
+    a += 1                                                                # <5>
+    b -= 1                                                                # <6>
+  end
+  a
+end
+```
+1. Ersetze die *collections* **a** und **b** durch **Integer**, ganze Zahlen.
+2. Prüfe, ob die übergebenen Argumente natürliche Zahlen sind.
+3. Wenn nicht, dann gib eine Fehlermeldung aus und breche die Berechnung ab.
+4. Solange **b** größer 0 ist,
+5. erhöhe **a** um 1,
+6. verringere **b** um 1.
+
+::: {.callout-note}
+## Datentyp Integer
+Beachte, dass es in Julia keinen Datentyp für natürliche Zahlen gibt.
+Die beiden Parameter `a` und `b` der Funktion `add_naive` sind als `Integer` festgelegt, einem [abstrakten Datentyp](https://docs.julialang.org/en/v1/manual/types/#man-abstract-types), der es zwar erlaubt, hier beliebige [ganzzahlige Werte](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Integers) zu übergeben, aber grundsätzlich auch negative Werte zulässt.
+
+Wir müssen also selbst prüfen, ob ein übergebenes Argument den Anforderungen entspricht und gegebenfalls die Abarbeitung mit einem Fehler abbrechen, damit bei Eingabe negativer Zahlen kein falsches Ergebnis ausgegeben wird.
+:::
+
+```{julia}
+@assert add_naive(4, 0) == 4
+@assert add_naive(4, 3) == 4 + 3
+@assert add_naive(17, 4) == 17 + 4
+```
+
+Für natürliche Zahlen funktioniert unser Algorithmus wie erwartet.
+Wenn wir aber eine negative ganze Zahl eingeben, dann wird die Berechnung mit einem Fehler abgebrochen:
+
+```{julia}
+try
+  add_naive(17, -4)
+catch e
+  println(e)
+end
+```
+
+Und wenn wir versuchen, etwas Anderes als Zahlen zu addieren, bekommen wir ebenfalls einen Fehler:
+
+```{julia}
+try
+  add_naive(apfel, birne)
+catch e
+  println(e)
+end
+```
+
+
+### Subtraktion
+
+
+### Multiplikation
+
+
+### Division
+
+
+
+## Zahlensysteme
+
+Um effizient mit Zahlen rechnen zu können, müssen wir diese auf geeignete Weise darstellen.
+Heute verwenden wir dazu hauptsächlich das [Dezimalsystem](https://de.wikipedia.org/wiki/Dezimalsystem) und für Berechnungen mit dem Computer das [Dualsystem](https://de.wikipedia.org/wiki/Dualsystem), auch *Binärsystem* genannt.
+
+Beides sind sogenannte [Stellenwertsysteme](https://de.wikipedia.org/wiki/Stellenwertsystem), bei denen eine Zahl aus verschiedenen [Ziffern](https://de.wikipedia.org/wiki/Zahlzeichen) gebildet wird, deren jeweiliger Beitrag zum Gesamtwert der Zahl von ihrer Position innerhalb der Zahl abhängt.
+
+Daneben gibt es auch (historische) [Additionssysteme](https://de.wikipedia.org/wiki/Additionssystem), bei denen sich der Wert einer Zahl durch Addieren der Werte ihrer Ziffern errechnet.
+
+::: {.callout-note}
+## Positions- und Additionssysteme
+Bei einem *Positionssystem* (auch *Stellenwertsystem* genannt) ist der Wert einer Ziffer abhängig von der Position dieser Ziffer innerhalb der Zahl.\
+Bei *Additionssystemen* ist der Wert einer Ziffer immer gleich und alle Ziffern werden einfach addiert, um den Wert der Zahl festzulegen.
+:::
+
+### Römische Zahlen
+
+[Römische Zahlen](https://de.wikipedia.org/wiki/R%C3%B6mische_Zahlschrift) sind ein Beispiel eines Additionssytems.
+Die Ziffern sind hier lateinische Großbuchstaben, denen ein fester Wert zugewiesen wird:
+
+| Ziffer | I | V | X  | L  | C   | D   | M    |
+|--------+---+---+----+----+-----+-----+------|
+| Wert   | 1 | 5 | 10 | 50 | 100 | 500 | 1000 |
+: Römische Ziffern {#tbl-ziffern}
+
+Da die Werte der Ziffern bei einem Additionssystem einfach zusammengezählt werden, ist z.B. der Wert der römischen Zahl `XVII` gleich 10 + 5 + 1 + 1 = 17.
+
+::: {.callout-note}
+## Subtraktionsregel
+Die Subtraktionsregel ist eine übliche, verkürzende Schreibweise, mit der vermieden wird, vier gleiche Ziffern in direkter Aufeinanderfolge zu schreiben.\
+Die Subtraktionsregel besagt, dass die Ziffern `I`, `X` und `C` einer ihrer beiden jeweils nächstgrößeren Ziffern vorangestellt werden dürfen und dann in ihrem Zahlwert von deren Wert abzuziehen sind:
+
+- `I` vor `V` oder `X`  =>  `IV` = 4, `IX` = 9
+- `X` vor `L` oder `C`  =>  `XL` = 40, `XC` = 90
+- `C` vor `D` oder `M`  =>  `CD` = 400, `CM` = 900
+:::
+
+::: {.callout-tip}
+## Der Wert der römischen Zahl MCMLXXXIV
+`MCMLXXXIV` = $1000+(1000-100)+50+(3\cdot10)+(5-1)=1984$
+:::
+
+Das Rechnen mit römischen Zahlen ist allerdings recht schwierig; hierfür wurden Hilfsmittel wie das [Rechenbrett](https://de.wikipedia.org/wiki/Rechnen_auf_Linien) und der [Abakus](https://de.wikipedia.org/wiki/Abakus_(Rechenhilfsmittel)) verwendet.
+Dabei werden die römischen Zahlen in ein Positionssystem überführt und Werten in der Form von Rechenmünzen oder Kugeln zugeordnet, mit denen dann die Rechenoperationen durchgeführt werden.
+Das Rechnen mit Rechenbrett und Abakus war bis zum Ende des Mittelalters weit verbreitet und wurde erst durch die Einführung der indischen Zahlenschrift und des heute gebräuchlichen Dezimalsystems abgelöst.
+
+Wir wollen also nicht direkt mit römischen Zahlen rechnen, sondern entwickeln eine Funktion, die römische Zahlen in das Dezimalsystem überführt.
+
+Als ersten Schritt definieren wir hierzu ein Objekt vom Datentyp [Dict](https://docs.julialang.org/en/v1/base/collections/#Dictionaries), das den Wert der römischen Ziffern gemäß @tbl-ziffern festlegt:
+
+```{julia}
+keys =   ['I', 'V', 'X', 'L', 'C', 'D', 'M']
+values = [1,   5,   10,  50,  100, 500, 1000]
+const RD = Dict(zip(keys, values))
+```
+
+Jeder Eintrag in einem `Dict` entspricht einem Schlüssel-Werte Paar; bei dem gerade angelegten `RD` Objekt ist der Schlüssel vom Typ `Char` (ein einzelner Buchstabe) und der Wert vom Typ `Int64` (eine ganzzahlige Dezimalzahl mit einer internen Länge von 64 Bit).\
+Der Wert für einen bestimmten Schlüssel kann so ausgelesen werden:
+
+```{julia}
+RD['D']
+```
+
+Damit könnten wir eine römische Zahl sehr einfach in eine Dezimalzahl umwandeln: 
+
+```{julia}
+function rom2dec(rom::String)::Int
+  dec = 0
+  for c in rom
+    dec += RD[c]
+  end
+  dec
+end
+
+rom2dec("XVII")
+```
+
+Allerdings macht die uns die Subtraktionsregel einen Strich durch die Rechnung, da so aufgeschriebene römische Zahlen nicht korrekt umgewandelt werden:
+
+```{julia}
+rom2dec("MCMLXXXIV")
+```
+
+Das richtige Ergebnis wäre `MCMLXXXIV` = 1984, aber das `C` vor dem `M` wurde hinzugezählt anstatt abgezogen und genauso das `I` vor dem `V`.
+Das berechnete Ergebnis ist damit um 2 `C` und 2 `I` (= 202) größer als das korrekte Ergebnis.
+
+Woran kann man aber erkennen, dass die Subtraktionsregel angewendet werden soll?\
+Im Regelfall werden die römischen Ziffern in absteigender Folge von links nach rechts aufgeschrieben, d.h. die größte (in die Zahl passende) Ziffer zuerst, dann die nächst kleinere und so weiter.
+
+Die Zahl 66 wird zum Beispliel als `LXVI` geschrieben; wenn wir dagegen `XLVI` schreiben, dann taucht die kleinere Ziffer `X` vor der größeren Ziffer `L` auf, und wir müssen die Subtraktionsregel anwenden mit dem Ergebnis 46.
+
+Die Subtraktionsregel muss also immer angewendet werden wenn eine größere auf eine kleinere Ziffer folgt.
+Das kann dann so im Programmcode umgesetzt wedren:
+
+```julia
+function rom2dec(rom::String)::Int
+  dec = 0
+  for i in eachindex(rom)
+    curr = RD[rom[i]]
+    i == lastindex(rom) && return dec + curr
+    next = RD[rom[i+1]]
+    curr < next ? dec -= curr : dec += curr
+  end
+end
+```
+Zur Kontrolle rufen wir die entsprechende Funktion aus dem begleitenden Julia-Paket `MatheKapierenMitJulia` auf.
+Da die einzelnen Funktion in Untermodule gruppiert sind, müssen wir den entsprechenden Modulnamen (hier `Zahlentheorie`) beim Aufruf der Funktion ebenfalls angeben:
+
+```{julia}
+using MatheKapierenMitJulia
+
+@assert Zahlentheorie.rom2dec("MCMLXXXIV") == 1984
+```
+
+
+
+### Dezimalzahlen
+
+### Binärzahlen
+
+## Grundrechenarten
+
+### Die russische Bauernregel der Multiplikation
+
+```julia
+function bauernregel(x::Integer, y::Integer)::Integer
+  z::Integer = 0
+  while y > 0
+    isodd(y) && (z += x)
+    x <<= 1
+    y >>= 1
+  end
+  z
+end
+```

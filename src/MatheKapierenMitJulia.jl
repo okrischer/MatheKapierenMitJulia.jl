@@ -1,6 +1,6 @@
 module MatheKapierenMitJulia
 
-export Arithmetik
-include("arithmetik.jl")
+export Zahlentheorie
+include("zahlentheorie.jl")
 
 end
