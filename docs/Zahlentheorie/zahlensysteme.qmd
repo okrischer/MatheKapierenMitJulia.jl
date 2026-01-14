@@ -11,51 +11,49 @@ $$
 \mathbb{N} = \{1,2,3\dots\}
 $$
 
-Diese Darstellung hat sich aber als unzureichend herausgestellt, auch weil die [ganzen Zahlen](https://de.wikipedia.org/wiki/Z%C3%A4hlen) selbst als Erweiterung der natürlichen Zahlen definiert sind, und die obige Definition damit selbstbezüglich und ohne Aussagekraft ist (vgl. hierzu [Selbstreferenzialität](https://de.wikipedia.org/wiki/Selbstreferenzialit%C3%A4t)).
+Diese Darstellung hat sich aber als unzureichend herausgestellt, auch weil die [ganzen Zahlen](https://de.wikipedia.org/wiki/Z%C3%A4hlen) selbst als Erweiterung der natürlichen Zahlen definiert sind, und die obige Definition damit eigentlich nichts aussagt (vgl. hierzu [Selbstreferenzialität](https://de.wikipedia.org/wiki/Selbstreferenzialit%C3%A4t)).
 
 Ende des 19. Jarhunderts wurde diese Definition durch ein formal präzises System, den
 sogenannten [Peano-Axiomen](https://de.wikipedia.org/wiki/Peano-Axiome) abgelöst, benannt nach dem italienischen Mathematiker [Guiseppe Peano](https://de.wikipedia.org/wiki/Giuseppe_Peano).
 Die Menge der natürlichen Zahlen ist danach die Menge der Zahlen, die den *Peano-Axiomen* genügt.
 
-::: {.callout-note}
+::: {.callout-important}
 ## Peano-Axiome
 Die mengentheoretischen und logischen Grundlagen der *Peano-Axiome* sollen uns an dieser Stelle nicht interessieren.
 Für uns genügt es, die nachfolgenden Grundsätze zu verstehen:
 
-1. Jede natürliche Zahl $n$ hat einen direkten Nachfolger $n'$, d.h. die Menge der natürlichen Zahlen ist unendlich.
-2. Zwei verschiedene natürliche Zahlen haben auch verschiedene Nachfolger, d.h. jede natürliche Zahl ist eindeutig.
-3. `0` ist eine natürliche Zahl, aber kein Nachfolger einer natürlichen Zahl, d.h. `0` hat keinen Vorgänger.
-:::
+Die `0` ist eine natürliche Zahl, hat aber eine Sonderrolle: sie hat als einzige natürliche Zahl keinen Vorgänger und ist damit das kleinste Element der Menge.
 
-Die Sonderrolle der `0` wird hier deutlich: sie hat als einzige natürliche Zahl keinen Vorgänger und ist damit das kleinste Element der Menge.
-Alle nachfolgenden Zahlen sind jeweils um den Wert `1` größer als ihr Vorgänger.
-Da jede Zahl einen eindeutigen Nachfolger hat, kann auch für jede Zahl mit Ausnahme der `0` ein eindeutiger Vorgänger bestimmt werden.
-Daraus ergeben sich folgende Definitionen für den Nachfolger bzw. den Vorgänger einer Zahl:
+Alle natürlichen Zahlen haben einen direkten Nachfolger, dessen Wert jeweils um `1` größer ist.
+Damit kann auch für jede Zahl mit Ausnahme der `0` ein eindeutiger Vorgänger bestimmt werden.
+Es ergeben sich folgende Definitionen für den Nachfolger `n'` und den Vorgänger einer Zahl `n`:
 
 $$
 \begin{align*}
 n' &= n + 1 \\
-n &= n' - 1, \quad n' > 0.
+n &= n' - 1, \quad n' > 0
 \end{align*}
 $$
+:::
 
-Wir werden im Folgenden zeigen, dass diese Definitionen reichen, um alle vier [Grundrechenarten](https://de.wikipedia.org/wiki/Grundrechenart) *Addition*, *Subtraktion*, *Multiplikation* und *Division* abzubilden.
+Wir wollen im Folgenden zeigen, dass diese Definitionen reichen, um alle vier [Grundrechenarten](https://de.wikipedia.org/wiki/Grundrechenart) *Addition*, *Subtraktion*, *Multiplikation* und *Division* abzubilden.
 Das bedeutet, dass die Grundrechenarten letzlich auf einfaches *Zählen* zurückgeführt werden können.
 
 ### Zählen
 
 [Zählen](https://de.wikipedia.org/wiki/Z%C3%A4hlen) dient der Ermittlung der Anzahl der Elemente einer endlichen Menge von Objekten gleicher Art.
-In Julia können wir so zählen:
+In Julia können wir mit den obigen Definitionen für den *Nachfolger* und *Vorgänger* einer natürlichen Zahl so zählen:
 
 ```{julia}
 n = 0
-n += 1                            # <1>
+n += 1
 @show n
-n -= 1                            # <2>
+n -= 1
 @show n;
 ```
-1. Vorwärts zählen: Kurzform für **n = n + 1**
-2. Rückwärts zählen: Kurzform für **n = n - 1**
+
+Der Ausdruck `n += 1` ist eine kürzere Schreibweise für `n = n + 1`, der einer Variablen `n` einen um `1` höheren Wert zuweist (vorwärts zählen).
+Genauso bedeutet `n -= 1`, der Variablen `n` einen um `1` niedrigeren Wert zuzuweisen (rückwärts zählen).
 
 Nehmen wir an, wir haben zwei Obstschalen, eine mit Äpfeln und eine mit Birnen:
 
@@ -68,32 +66,29 @@ birnen = [birne, birne, birne]
 @show birnen;
 ```
 
-Um die Anzahl der Früchte in den jeweiligen Schalen zu bestimmen, erstellen wir eine Funktion, die elementares Zählen simuliert:
+Um die Anzahl der Früchte in den jeweiligen Schalen zu bestimmen, erstellen wir eine [Funktion](https://docs.julialang.org/en/v1/manual/functions/), die elementares Zählen simuliert:
 
 ```{julia}
 function count(collection::AbstractVector)
-  n = 0                                               # <1>
-  for e in collection                                 # <2>
-    n += 1                                            # <3>
+  n = 0
+  for e in collection
+    n += 1
   end
-  n                                                   # <4>
+  n
 end
 ```
 
-1. Initialisierung eines Zählers **n** mit 0 (dem "Wurzelelement" der natürlichen Zahlen).
-2. Beginn einer [for](https://docs.julialang.org/en/v1/manual/control-flow/#man-loops)-Schleife: alle Elemente der *collection* werden einmal durchlaufen und dabei nacheinander an die Variable **e** gebunden.
-3. Für jedes Element wird der Zähler um 1 erhöht, d.h. es wird gezählt.
-4. Der aktualisierte Zähler **n** wird als Ergebnis der Funktion zurück gegeben.
+Das *Zählen* wird in einer [for-Schleife](https://docs.julialang.org/en/v1/manual/control-flow/#man-loops) simuliert, in der für jedes Element einer *collection* der Zähler `n` um `1` erhöht wird.
 
 ::: {.callout-note}
 ## Datentyp Vector
 Ein [Vector](https://docs.julialang.org/en/v1/base/arrays/#Base.Vector) in Julia ist eine Sammlung (engl. *collection*) von Objekten eines bestimmten Datentyps.
 
 Um genau zu sein, ist eine Sammlung nicht das Gleiche wie eine Menge.
-Eine Sammlung ist immer endlich und kann ein bestimmtes Objekt - im Gegensatz zu einer Menge - mehrfach enthalten.
+Eine Sammlung ist immer endlich und kann ein bestimmtes Objekt mehrfach enthalten.
 Das ist für unsere Überlegungen hier aber unerheblich; wir verwenden "Sammlung" als Synonym für "Menge".
 
-Der Parameter `collection` der Funktion `count` ist als `AbstractVector` festgelegt, ein [abstrakter Datentyp](https://docs.julialang.org/en/v1/base/base/#abstract%20type), der es erlaubt, an dieser Stelle einen Vector eines beliebigen Datentyps zu übergeben.
+Der Parameter `collection` der Funktion `count` ist als `AbstractVector` festgelegt, ein *abstrakter Datentyp*, der es erlaubt, an dieser Stelle einen Vector eines beliebigen Datentyps zu übergeben.
 Die oben definierten Vectoren `äpfel` und `birnen` sind z.B. vom Typ `Vector{String}`.
 :::
 
@@ -123,17 +118,17 @@ Der Algorithmus kann so in Julia implementiert werden:
 ```{julia}
 function count_up(a::AbstractVector, b::AbstractVector)
   n = count(a)                                              # <1>
-  while !isempty(b)                                         # <2>
-    push!(a, pop!(b))
+  while !isempty(b)
+    push!(a, pop!(b))                                       # <2>
     n += 1
   end
   (n, a)                                                    # <3>
 end
 ```
 
-1. Abzählen der Elemente aus **a** und speichern unter **n**.
-2. Start einer [while](https://docs.julialang.org/en/v1/manual/control-flow/#man-loops)-Schleife: die Schleife wird solange ausgeführt bis **b** leer ist. In der Schleife wird mit [pop!](https://docs.julialang.org/en/v1/base/collections/#Base.pop!) jeweils ein Element aus **b** entfernt und mit [push!](https://docs.julialang.org/en/v1/base/collections/#Base.push!) in **a** eingefügt; schließlich wird mit **n += 1** weitergezählt.
-3. Wenn die Schleife beendet ist (**b** ist jetzt leer), werden der Zähler **n** und die *collection* **a** als Ergebnis zurück gegeben.
+1. Abzählen der Elemente aus der ersten Menge **a**.
+2. Ein Element aus der zweiten Menge **b** mit [pop!](https://docs.julialang.org/en/v1/base/collections/#Base.pop!) entnehmen und mit [push!](https://docs.julialang.org/en/v1/base/collections/#Base.push!) zur ersten Menge **a** hinzufügen; dann mit **n += 1** weiterzählen.
+3. Wenn die Schleife beendet ist (**b** ist jetzt leer), werden der Zähler **n** und die erste Menge **a** als Ergebnis zurück gegeben.
 
 Wir prüfen, ob der Algorithmus wie beabsichtigt funktioniert:
 
@@ -143,12 +138,12 @@ n, früchte = count_up(äpfel, birnen)
 @assert n == 4 + 3
 ```
 
-Das Macro [@assert](https://docs.julialang.org/en/v1/base/base/#Base.@assert) prüft, ob die Gesamtzahl der Früchte `n` tatsächlich gleich der Summe von `3` und `4` ist.
+Das Macro [@assert](https://docs.julialang.org/en/v1/base/base/#Base.@assert) prüft, ob die Gesamtzahl der Früchte `n` tatsächlich gleich der Summe von `4` und `3` ist.
 Wenn nicht, würde ein `AssertionError` ausgegeben werden.
 Da das nicht der Fall ist, können wir davon ausgehen, dass unser Algorithmus korrekt arbeitet.
 
 Wir sollten uns aber klar machen, dass wir mit obigem Algorithmus tatsächlich Äpfel und Birnen **zusammengezählt** haben.
-Das ist nicht dasselbe wie die beiden Zahlen `3` und `4` zu **addieren** (erstes operiert auf der Anzahl beliebiger Objekte, letzteres auf Zahlen.)
+Das ist nicht dasselbe wie die beiden Zahlen `3` und `4` zu **addieren** (erstes operiert auf der Anzahl von Objekten, letzteres auf Zahlen).
 
 Trotzdem kommt bei beiden Verfahren das Gleiche heraus: `sieben` = 7 = 4 + 3.\
 Wir wollen uns das zunutze machen und auf der Grundlage des bestehenden Algorithmus eine *Rechenvorschrift* für die [Addition](https://de.wikipedia.org/wiki/Addition) erstellen.
@@ -156,16 +151,16 @@ Wir wollen uns das zunutze machen und auf der Grundlage des bestehenden Algorith
 Die Idee ist, anstelle beliebiger Objekte natürliche Zahlen zu verwenden; auch Mengen von Zahlen können abgezählt werden:
 
 ```{julia}
-@show count([1, 2, 3, 4])                   # <1>
-@show collect(1:7)                          # <2>
-@show count(1:7)                            # <3>
+@show count([1, 2, 3, 4])
+@show collect(1:7)
+@show count(1:7)
 @show count(1:100);
 ```
-1. Abzählen einer Menge aus Zahlen.
-2. Ein Ausdruck in der Form **start:stop** erzeugt eine [range](https://docs.julialang.org/en/v1/base/math/#Base.range), ein Julia-Objekt das, wenn es z.B. mit [collect](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple{Any}) ausgewertet wird, einen Vector der Zahlen von **start** bis **stop** erzeugt.
-3. Abzählen der Elemente einer **range** aus natürlichen Zahlen.
 
-Entscheidend ist hier die Erkenntnis, dass offensichtlich die Anzahl der ersten `n` natürlichen Zahlen (ohne die `0`) immer gleich `n` ist, formal ausgedrückt
+Ein Ausdruck in der Form `start:stop` erzeugt eine [range](https://docs.julialang.org/en/v1/base/math/#Base.range), ein Julia-Objekt das, wenn es z.B. mit [collect](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple{Any}) ausgewertet wird, einen Vector der Zahlen von `start` bis `stop` erzeugt.
+
+Entscheidend ist hier die Erkenntnis, dass offensichtlich die Anzahl der ersten $n$ natürlichen Zahlen (ohne die `0`) immer gleich $n$ ist.
+Das kann formal so ausgedrückt werden:
 
 $$
 N = \{1,2,\dots,n\} \implies |N| = n,
@@ -173,72 +168,195 @@ $$
 
 wobei $|N|$ die [Mächtigkeit](https://de.wikipedia.org/wiki/M%C3%A4chtigkeit_(Mathematik)) der Menge $N$ bezeichnet, also die Anzahl der Elemente in $N$.
 
-Mit Hilfe der *Peano-Axiome* kann gezeigt werden, dass diese Aussage immer wahr ist.
-Wir können also unseren Algorithmus für die *Addition* so anpassen, dass wir anstatt Mengen abzuzählen, direkt mit natürlichen Zahlen rechnen
+Mit Hilfe der *Peano-Axiome* kann gezeigt werden, dass diese Aussage für jedes $n$ wahr ist.
+Wir können also unseren Algorithmus für die *Addition* so anpassen, dass er anstatt Mengen abzuzählen, direkt mit natürlichen Zahlen rechnet:
 
 ```{julia}
-function add_naive(a::Integer, b::Integer)                                # <1>
-  if a < 0 || b < 0                                                       # <2>
-    throw(DomainError((a, b), "both arguments must be non-negative"))     # <3>
+function nat_add(a::Integer, b::Integer)
+  if a < 0 || b < 0
+    throw(DomainError((a, b), "both arguments must be natural numbers"))
   end
-  while b > 0                                                             # <4>
-    a += 1                                                                # <5>
-    b -= 1                                                                # <6>
+  while b > 0
+    a += 1
+    b -= 1
   end
   a
 end
 ```
-1. Ersetze die *collections* **a** und **b** durch **Integer**, ganze Zahlen.
-2. Prüfe, ob die übergebenen Argumente natürliche Zahlen sind.
-3. Wenn nicht, dann gib eine Fehlermeldung aus und breche die Berechnung ab.
-4. Solange **b** größer 0 ist,
-5. erhöhe **a** um 1,
-6. verringere **b** um 1.
+
+Der Kern unseres Algorithmus bleibt dabei unverändert: `a` wird um `1` erhöht, `b` um `1` verringert, nur dass wir jetzt keinen gesonderten Zähler mehr führen müssen.
 
 ::: {.callout-note}
 ## Datentyp Integer
 Beachte, dass es in Julia keinen Datentyp für natürliche Zahlen gibt.
-Die beiden Parameter `a` und `b` der Funktion `add_naive` sind als `Integer` festgelegt, einem [abstrakten Datentyp](https://docs.julialang.org/en/v1/manual/types/#man-abstract-types), der es zwar erlaubt, hier beliebige [ganzzahlige Werte](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Integers) zu übergeben, aber grundsätzlich auch negative Werte zulässt.
-
-Wir müssen also selbst prüfen, ob ein übergebenes Argument den Anforderungen entspricht und gegebenfalls die Abarbeitung mit einem Fehler abbrechen, damit bei Eingabe negativer Zahlen kein falsches Ergebnis ausgegeben wird.
+Die beiden Parameter `a` und `b` der Funktion `nat_add` sind als `Integer` festgelegt, einem weiteren [abstrakten Datentyp](https://docs.julialang.org/en/v1/manual/types/#man-abstract-types), der es zwar erlaubt, hier beliebige [ganzzahlige Werte](https://docs.julialang.org/en/v1/manual/integers-and-floating-point-numbers/#Integers) zu übergeben, aber grundsätzlich auch negative Werte zulässt.
 :::
 
+Wir müssen also selbst prüfen, ob die der Funktion übergebenen Argumente tatsächlich natürliche Zahlen sind.
+Der Ausdruck `a < 0 || b < 0` verwendet dazu eine [short-circuit-evaluation](https://docs.julialang.org/en/v1/manual/control-flow/#Short-Circuit-Evaluation), mit der mehrere Bedinungen gleichzeitig geprüft werden.
+Falls eines der beiden Argumente kleiner `0` ist, wird die Abarbeitung mit einem Fehler abgebrochen.
+
 ```{julia}
-@assert add_naive(4, 0) == 4
-@assert add_naive(4, 3) == 4 + 3
-@assert add_naive(17, 4) == 17 + 4
+@assert nat_add(4, 0) == 4 + 0
+@assert nat_add(0, 3) == 0 + 3
+@assert nat_add(4, 3) == 4 + 3
 ```
 
 Für natürliche Zahlen funktioniert unser Algorithmus wie erwartet.
-Wenn wir aber eine negative ganze Zahl eingeben, dann wird die Berechnung mit einem Fehler abgebrochen:
+Wenn wir aber eine negative ganze Zahl eingeben, dann erhalten wir einen Fehler:
 
 ```{julia}
 try
-  add_naive(17, -4)
+  nat_add(17, -4)
 catch e
   println(e)
 end
 ```
 
-Und wenn wir versuchen, etwas Anderes als Zahlen zu addieren, bekommen wir ebenfalls einen Fehler:
+Und wenn wir versuchen, etwas Anderes als ganze Zahlen zu addieren, bekommen wir ebenfalls einen Fehler:
 
 ```{julia}
 try
-  add_naive(apfel, birne)
+  nat_add(17, 4.5)
 catch e
   println(e)
 end
 ```
-
 
 ### Subtraktion
 
+Die [Subtraktion](https://de.wikipedia.org/wiki/Subtraktion) ist die Umkehrung der *Addition*.
+Wenn wir unseren Algorithmus für die Addition nur an einer Stelle ändern, können wir damit subtrahieren anstatt addieren: `a` wird in der Schleife jeweils um `1` verringert anstatt erhöht (wir zählen also rückwärts anstatt vorwärts).
+
+Falls $a < b$ kommt dabei aber ein negatives Ergebnis heraus, was für natürliche Zahlen nicht zulässig ist.
+Die *Peano-Axiome* sagen, dass die `0` keinen Vorgänger hat und damit die kleinste natürliche Zahl ist.
+Wenn wir mit natürlichen Zahlen rechnen, ist das Ergebnis einer solchen Subtraktion immer gleich `0`:
+
+$$
+a < b \implies a - b = 0, \quad a, b \in \mathbb{N}
+$$
+
+Wir müssen also in der Schleifenbedingung zusätzlich auf `a > 0` prüfen:
+
+```{julia}
+function nat_sub(a::Integer, b::Integer)
+  if a < 0 || b < 0
+    throw(DomainError((a, b), "both arguments must be natural numbers"))
+  end
+  while a > 0 && b > 0
+    a -= 1
+    b -= 1
+  end
+  a
+end
+```
+
+```{julia}
+@assert nat_sub(7, 4) == 7 - 4
+@assert nat_sub(4, 0) == 4 - 0
+@assert nat_sub(4, 4) == 4 - 4
+@assert nat_sub(3, 4) == 0
+```
+
+Die Ergebnisse sind korrekt und wir haben die Subtraktion erfolgreich auf "rückwärts zählen" zurückgeführt.
 
 ### Multiplikation
 
+Die [Multiplikation](https://de.wikipedia.org/wiki/Multiplikation) zweier natürlicher Zahlen $a$ und $b$ ist wie folgt definiert:
+
+$$
+a \cdot b = \underbrace{b + b + \cdots + b}_\text{a-mal} = p,
+$$
+
+wobei $p$ das *Produkt* der Zahlen $a$ und $b$ genannt wird.
+
+Um das Produkt $a \cdot b$ zu berechnen, müssen wir also lediglich *a-mal* `b` addieren: 
+
+```{julia}
+function nat_mul(a::Integer, b::Integer)
+  if a < 0 || b < 0
+    throw(DomainError((a, b), "both arguments must be natural numbers"))
+  end
+  p = 0
+  while a > 0
+    p = nat_add(p, b)
+    a -= 1
+  end
+  p
+end
+```
+
+```{julia}
+@assert nat_mul(3, 4) == 3 * 4
+@assert nat_mul(1, 7) == 1 * 7
+@assert nat_mul(0, 4) == 0 * 4
+@assert nat_mul(3, 0) == 3 * 0
+```
+
+Damit haben wir die Multiplikation auf die Addition zurückgeführt.
 
 ### Division
 
+Die [Division](https://de.wikipedia.org/wiki/Division_(Mathematik)) ist die Umkehrung der *Multiplikation*.
+Wenn zwei natürliche Zahlen $a$ und $b$ dividiert werden sollen, wenn also $a \div b$ berechnet werden soll, so wird gefragt, wie man die Zahl $a$ als Vielfaches von $b$ darstellen kann:
+
+$$
+a = b \cdot q + r, \quad 0 \leq r < q,
+$$
+
+wobei $q$ der ganzzahlige *Quotient* der Division ist, und $r$ den *Rest* der Division angibt.
+Wenn $r$ gleich `0` ist, wenn sich also kein Rest bei der Division ergibt, dann ist $b$ ein *Teiler* von $a$; man sagt, $b$ teilt $a$ und schreibt $b \mid a$.
+Die Division natürlicher Zahlen wird daher auch [Teilen mit Rest](https://de.wikipedia.org/wiki/Division_mit_Rest) genannt.
+
+Um den Quotienten $q$ zu berechnen, müssen wir feststellen, wie oft $b$ in $a$ "passt", d.h. wie oft $b$ von $a$ abgezogen werden kann.
+Das führt zu folgendem Algorithmus:
+
+```{julia}
+function nat_div(a::Integer, b::Integer)
+  if a < 0 || b < 0
+    throw(DomainError((a, b), "both arguments must be natural numbers"))
+  end
+  b == 0 && throw(DomainError(b, "division by 0 is not defined"))
+  q = 0
+  while a >= b
+    a = nat_sub(a, b)
+    q += 1
+  end
+  q
+end
+```
+
+Wir erkennen hier auch, warum die Division durch `0` nicht erlaubt ist:
+wenn `b` gleich `0` ist, dann wird innerhalb der Schleife `a` nicht verringert, und die Schleifenbedingung `a >= b` bleibt immer wahr.
+Damit würde eine [Endlosschleife](https://de.wikipedia.org/wiki/Endlosschleife_(Programmierung)) entstehen, d.h. die Abarbeitung ist nie zuende und der Quotient `q` wächst gegen unendlich ($\infty$).
+
+```{julia}
+@assert nat_div(12, 4) == 12 ÷ 4
+@assert nat_div(13, 4) == 13 ÷ 4
+@assert nat_div(3, 4)  == 3 ÷ 4
+@assert nat_div(0, 4)  == 0 ÷ 4
+
+try
+  nat_div(3, 0)
+catch e
+  println(e)
+end
+```
+
+Damit haben wir die Division auf die Subtraktion zurückgeführt.
+
+### Zusammenfassung
+
+Wir haben unser Ziel, die *Grundrechenarten* in $\mathbb{N}$ auf *einfaches Zählen* zurückzuführen erreicht.
+Nachfolgend eine Übersicht der Rechenarten und ihrer Operatoren:
+
+| Rechenart      | Symbol  | Julia Operator | Funktion ($\mathbb{N}$)  |
+|:---------------|:-------:|:--------------:|:-------------------------|
+| Addition       | $+$     | `+`            | `nat_add`                |
+| Subtraktion    | $-$     | `-`            | `nat_sub`                |
+| Multiplikation | $\cdot$ | `*`            | `nat_mul`                |
+| Division       | $\div$  | `÷`            | `nat_div`                |
+: Operatoren der Grundrechenarten {#tbl-operatoren}
 
 
 ## Zahlensysteme
@@ -327,32 +445,32 @@ rom2dec("MCMLXXXIV")
 Das richtige Ergebnis wäre `MCMLXXXIV` = 1984, aber das `C` vor dem `M` wurde hinzugezählt anstatt abgezogen und genauso das `I` vor dem `V`.
 Das berechnete Ergebnis ist damit um 2 `C` und 2 `I` (= 202) größer als das korrekte Ergebnis.
 
-Woran kann man aber erkennen, dass die Subtraktionsregel angewendet werden soll?\
 Im Regelfall werden die römischen Ziffern in absteigender Folge von links nach rechts aufgeschrieben, d.h. die größte (in die Zahl passende) Ziffer zuerst, dann die nächst kleinere und so weiter.
 
 Die Zahl 66 wird zum Beispliel als `LXVI` geschrieben; wenn wir dagegen `XLVI` schreiben, dann taucht die kleinere Ziffer `X` vor der größeren Ziffer `L` auf, und wir müssen die Subtraktionsregel anwenden mit dem Ergebnis 46.
 
 Die Subtraktionsregel muss also immer angewendet werden wenn eine größere auf eine kleinere Ziffer folgt.
-Das kann dann so im Programmcode umgesetzt wedren:
+Das kann dann so im Programmcode umgesetzt werden:
 
 ```julia
-function rom2dec(rom::String)::Int
-  dec = 0
-  for i in eachindex(rom)
-    curr = RD[rom[i]]
-    i == lastindex(rom) && return dec + curr
-    next = RD[rom[i+1]]
-    curr < next ? dec -= curr : dec += curr
+function roman2decimal(roman::String)::Int
+  decimal = 0
+  for i in eachindex(roman)
+    current = RD[roman[i]]
+    i == lastindex(roman) && return decimal + current
+    next = RD[roman[i+1]]
+    current < next ? decimal -= current : decimal += current
   end
 end
 ```
 Zur Kontrolle rufen wir die entsprechende Funktion aus dem begleitenden Julia-Paket `MatheKapierenMitJulia` auf.
-Da die einzelnen Funktion in Untermodule gruppiert sind, müssen wir den entsprechenden Modulnamen (hier `Zahlentheorie`) beim Aufruf der Funktion ebenfalls angeben:
+Da die einzelnen Funktionen in Untermodule gegliedert sind, müssen wir den entsprechenden Modulnamen (hier `Zahlentheorie`) beim Aufruf der Funktion ebenfalls angeben:
 
 ```{julia}
 using MatheKapierenMitJulia
 
-@assert Zahlentheorie.rom2dec("MCMLXXXIV") == 1984
+@assert Zahlentheorie.roman2decimal("XVII") == 17
+@assert Zahlentheorie.roman2decimal("MCMLXXXIV") == 1984
 ```
 
 
@@ -360,19 +478,3 @@ using MatheKapierenMitJulia
 ### Dezimalzahlen
 
 ### Binärzahlen
-
-## Grundrechenarten
-
-### Die russische Bauernregel der Multiplikation
-
-```julia
-function bauernregel(x::Integer, y::Integer)::Integer
-  z::Integer = 0
-  while y > 0
-    isodd(y) && (z += x)
-    x <<= 1
-    y >>= 1
-  end
-  z
-end
-```
